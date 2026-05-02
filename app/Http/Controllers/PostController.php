@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -29,17 +30,19 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UpdatePostRequest $request)
     {
+        $data = $request->validated();
+        $data['user_id'] = Auth::id();
+        Post::create($data);
         return redirect()->route('posts.index');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $post)
+    public function show(Post $post)
     {
-        $post = Post::find($post);
         if (!$post) {
             abort(404);
         }
@@ -50,11 +53,13 @@ class PostController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $post)
+    public function edit(Post $post)
     {
-        $post = Post::find($post);
         if (!$post) {
             abort(404);
+        }
+        if ($post->user_id !== Auth::id()) {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to edit this post.');
         }
         return view('posts.edit', compact('post'));
     }
@@ -66,6 +71,9 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $post->update($data);
+        if($post->user_id !== Auth::id()) {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to update this post.');
+        }
         return redirect()->route('posts.show', ['post' => $post->id])->with('success', 'Post updated successfully!');
     }
 
@@ -74,6 +82,9 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
+        if($post->user_id !== Auth::id()) {
+            return redirect()->route('posts.index')->with('error', 'You are not authorized to delete this post.');
+        }
         $post->delete();
         return redirect()->route('posts.index');
     }

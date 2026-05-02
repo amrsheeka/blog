@@ -1,24 +1,104 @@
 @extends('layout.main')
+
 @section('content')
-<!-- HOME -->
-    <div id="homeView" class="container">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="fw-bold">Latest Posts</h3>
-            
-        </div>
-        @foreach ($posts as $post)
-            <div class="card my-3">
-                <div class="card-header">
-                    {{ $post->user->name}}
-                </div>
-                <div class="card-body">
-                    <h5 class="card-title">{{ $post->title }}</h5>
-                    <p class="card-text">{{ substr($post->content, 0, 100) . ' .....' }}</p>
-                    <!-- {{-- <a href="{{ url('/posts/' . $post->id) }}" class="btn btn-primary">Show Full Post</a> --}} -->
-                    <a href="{{ route('posts.show', ['post' => $post->id]) }}" class="btn btn-primary">Show Full Post</a>
-                </div>
-            </div>
-        @endforeach
-        <div id="postsList" class="row g-4"></div>
+
+<style>
+    .index-wrap {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 44px 32px;
+    }
+    .index-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+    }
+    .index-title {
+        font-family: 'Instrument Serif', serif;
+        font-size: 30px;
+        font-weight: 400;
+    }
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+    @media (max-width: 768px) {
+        .posts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 520px) {
+        .posts-grid { grid-template-columns: 1fr; }
+        .index-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    }
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 72px 0;
+        color: var(--text-faint);
+    }
+    .empty-state-icon {
+        font-size: 36px;
+        margin-bottom: 16px;
+    }
+    .empty-state-text {
+        font-family: 'Instrument Serif', serif;
+        font-size: 20px;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+    .empty-state-sub {
+        font-size: 13px;
+        color: var(--text-faint);
+        margin-bottom: 24px;
+    }
+</style>
+
+<div class="index-wrap">
+
+    <div class="index-header">
+        <h1 class="index-title">Latest posts</h1>
+        @auth
+            <a href="{{ route('posts.create') }}" class="btn-accent-custom">
+                + New post
+            </a>
+        @endauth
     </div>
+
+    <div class="posts-grid">
+        @forelse ($posts as $post)
+            <a href="{{ route('posts.show', $post) }}" class="post-card">
+                <div class="post-card-author">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr($post->user->name, 0, 1)) }}
+                    </div>
+                    <span class="post-card-author-name">{{ $post->user->name }}</span>
+                </div>
+                <div class="post-card-title">{{ $post->title }}</div>
+                <div class="post-card-excerpt">{{ Str::limit($post->content, 100, '...') }}</div>
+                <div class="post-card-footer">
+                    <span class="post-card-date">{{ $post->created_at->diffForHumans() }}</span>
+                    <span class="post-card-read">Read →</span>
+                </div>
+            </a>
+        @empty
+            <div class="empty-state">
+                <div class="empty-state-icon">✍️</div>
+                <div class="empty-state-text">No posts yet</div>
+                <div class="empty-state-sub">Be the first to share something worth reading.</div>
+                @auth
+                    <a href="{{ route('posts.create') }}" class="btn-primary-custom">
+                        Create the first post
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="btn-primary-custom">
+                        Join and start writing
+                    </a>
+                @endauth
+            </div>
+        @endforelse
+    </div>
+
+</div>
+
 @endsection
