@@ -115,7 +115,7 @@
 
 <div class="form-wrap">
 
-    <a href="{{ route('posts.show', $post) }}" class="form-back-link">Back to post</a>
+    <a href="{{redirect()->back()->getTargetUrl() }}" class="form-back-link">Back to post</a>
 
     <div class="edit-badge">✏️ Editing post</div>
 
@@ -162,7 +162,7 @@
             <button type="submit" class="btn-primary-custom">
                 💾 Save changes
             </button>
-            <a href="{{ route('posts.show', $post) }}" class="btn-ghost-custom">
+            <a href="{{redirect()->back()->getTargetUrl() }}" class="btn-ghost-custom">
                 Cancel
             </a>
         </div>

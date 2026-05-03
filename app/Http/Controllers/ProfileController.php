@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditProfileRequest;
 use App\Models\Post;
 use App\Models\Profile;
 use App\Models\User;
@@ -39,10 +40,7 @@ class ProfileController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Profile $profile)
-    {
-       
-    }
+    public function show(Profile $profile) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -55,9 +53,23 @@ class ProfileController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Profile $profile)
+    public function update(EditProfileRequest $request)
     {
-        //
+        $user = Auth::user();
+
+        $data = $request->validated();
+        unset($data['email']);
+        if($request->has('password') && $request->password) {
+            $data['password'] = bcrypt($request->password);
+
+        }else {
+            unset($data['password']);
+        }
+
+        $user->update($data);
+
+        return redirect()->route('profile')
+            ->with('success', 'Profile updated successfully.');
     }
 
     /**

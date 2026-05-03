@@ -10,7 +10,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'index'])->name('profile');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::put('/', [ProfileController::class, 'update'])->name('profile.update');
+    });
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::prefix('posts')->group(function () {
         Route::get('/create', [PostController::class, 'create'])->name('posts.create');

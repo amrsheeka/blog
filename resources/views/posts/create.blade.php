@@ -100,7 +100,7 @@
 
 <div class="form-wrap">
 
-    <a href="{{ route('posts.index') }}" class="form-back-link">Back to posts</a>
+    <a href="{{ redirect()->back()->getTargetUrl() }}" class="form-back-link">Back to posts</a>
 
     <h1 class="form-heading">New post</h1>
     <p class="form-subheading">Share something worth reading with the world.</p>
@@ -144,7 +144,7 @@
             <button type="submit" class="btn-accent-custom">
                 🚀 Publish post
             </button>
-            <a href="{{ route('posts.index') }}" class="btn-ghost-custom">
+            <a href="{{ redirect()->back()->getTargetUrl() }}" class="btn-ghost-custom">
                 Cancel
             </a>
         </div>
