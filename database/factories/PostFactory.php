@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Nette\Utils\Random;
 
 /**
  * @extends Factory<Model>
@@ -20,7 +21,8 @@ class PostFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'content' => $this->faker->paragraph(),
-            'user_id' => 1, 
+            'user_id' => random_int(1, 10),
+            'likes_count' => 0,
         ];
     }
 }
