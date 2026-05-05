@@ -132,4 +132,16 @@ class PostController extends Controller
     {
         return Like::where('user_id', Auth::id())->where('post_id', $post->id)->exists();
     }
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        $posts = Post::where('title', 'like', "%{$query}%")
+            ->orWhere('content', 'like', "%{$query}%")
+            ->get();
+        foreach ($posts as $post) {
+            $post['is_liked_by_current_user'] = $this->isLikedByCurrentUser($post);
+        }
+        $posts->load('user');
+        return view('posts.index', compact('posts'));
+    }
 }

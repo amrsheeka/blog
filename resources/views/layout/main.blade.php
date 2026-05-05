@@ -350,6 +350,12 @@
         <a class="nav-brand" href="{{ route('home') }}">
             <span class="dot"></span> Inkwell
         </a>
+        <form action="{{ route('posts.search') }}" method="GET" class="d-none d-md-flex" style="position: relative;">
+            <input type="text" name="query" class="form-control form-control-sm" placeholder="Search posts..." value="{{ request('query') }}" style="padding-right: 30px; border-radius: 999px; border: 0.5px solid var(--border);">
+            <button type="submit" class="btn btn-sm" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">
+                <i class="bi bi-search"></i>
+            </button>
+        </form>
 
         <div class="nav-actions">
             <a href="{{ route('posts.index') }}" class="btn-nav">

@@ -25,7 +25,7 @@
 
             <!-- FOLLOW BUTTON (optional future feature) -->
             <div class="mt-3 mt-md-0">
-                <button class="btn btn-outline-primary rounded-pill px-4">
+                <button class="btn-ghost-custom">
                     Follow
                 </button>
             </div>
@@ -82,7 +82,7 @@
                             </small>
 
                             <a href="{{ route('posts.show', $post) }}"
-                               class="btn btn-sm btn-outline-primary rounded-pill">
+                               class="btn-ghost-custom">
                                 Read →
                             </a>
 

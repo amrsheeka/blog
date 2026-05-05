@@ -25,7 +25,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{post}', [PostController::class, 'destroy'])->name('posts.delete');
         Route::post('/', [PostController::class, 'store'])->name('posts.store');
         Route::put('/{post}/like', [PostController::class, 'like'])->name('posts.like');
-        
+        Route::get('/search', [PostController::class, 'search'])->name('posts.search');
     });
 });
 Route::middleware('guest')->group(function () {
