@@ -1,176 +1,147 @@
 @extends('layout.main')
 
 @section('content')
-<style>
-    .index-wrap {
-        max-width: 860px;
-        margin: 0 auto;
-        padding: 44px 32px;
-    }
 
-    .index-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 28px;
-    }
+<div class="container py-5" style="max-width: 860px;">
 
-    .index-title {
-        font-family: 'Instrument Serif', serif;
-        font-size: 30px;
-        font-weight: 400;
-    }
-
-    .posts-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-    }
-
-    @media (max-width: 768px) {
-        .posts-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-
-    @media (max-width: 520px) {
-        .posts-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .index-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 12px;
-        }
-    }
-
-    .empty-state {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 72px 0;
-        color: var(--text-faint);
-    }
-
-    .empty-state-icon {
-        font-size: 36px;
-        margin-bottom: 16px;
-    }
-
-    .empty-state-text {
-        font-family: 'Instrument Serif', serif;
-        font-size: 20px;
-        color: var(--text-muted);
-        margin-bottom: 8px;
-    }
-
-    .empty-state-sub {
-        font-size: 13px;
-        color: var(--text-faint);
-        margin-bottom: 24px;
-    }
-
-    .like-btn {
-        background: none;
-        border: none;
-        cursor: pointer;
-    }
-    .likecount {
-        font-size: 14px;
-        margin-left: 4px;
-    }
-    .liked {
-        color: red;
-    }
-    .unliked {
-        color: gray;
-    }
-</style>
-<div class="index-wrap">
-
-    <div class="index-header">
-        <h1 class="index-title">Latest posts</h1>
+    <!-- HEADER -->
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+        <h1 class="mb-0 fw-semibold" style="font-size: 26px;">Latest Posts</h1>
         @auth
-        <a href="{{ route('posts.create') }}" class="btn-accent-custom">
-            + New post
-        </a>
+            <a href="{{ route('posts.create') }}" class="btn btn-sm rounded-pill px-4"
+               style="background:#c2410c; color:#fff; font-size:13px; font-weight:500;">
+                + New Post
+            </a>
         @endauth
     </div>
 
-    <div class="posts-grid">
+    <!-- GRID -->
+    <div class="row g-3">
         @forelse ($posts as $post)
-        <a href="{{ route('posts.show', $post) }}" class="post-card">
-            <div class="post-card-author">
-                <div class="user-avatar">
-                    {{ strtoupper(substr($post->user->name, 0, 1)) }}
+            <div class="col-md-6 col-lg-4">
+                <div class="card border rounded-3 h-100 shadow-sm post-card"
+                     style="cursor:pointer;"
+                     onclick="window.location='{{ route('posts.show', $post) }}'">
+
+                    <div class="card-body d-flex flex-column p-4">
+
+                        <!-- Author -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <a href="{{ route('profile.target', $post->user) }}"
+                               onclick="event.stopPropagation();"
+                               class="d-flex align-items-center gap-2 text-decoration-none">
+                                <div class="post-avatar">
+                                    {{ strtoupper(substr($post->user->name, 0, 1)) }}
+                                </div>
+                                <span style="font-size:12px; color:#6b6b68;">{{ $post->user->name }}</span>
+                            </a>
+                        </div>
+
+                        <!-- Title -->
+                        <h6 class="fw-semibold mb-2" style="font-size:14px; line-height:1.45;">
+                            {{ $post->title }}
+                        </h6>
+
+                        <!-- Excerpt -->
+                        <p class="text-muted flex-grow-1 mb-3" style="font-size:12px; line-height:1.6;">
+                            {{ Str::limit($post->content, 100, '...') }}
+                        </p>
+
+                        <!-- Footer -->
+                        <div class="d-flex align-items-center justify-content-between mt-auto">
+                            <small style="font-size:11px; color:#9c9c99;">
+                                {{ $post->created_at->diffForHumans() }}
+                            </small>
+
+                            <div class="d-flex align-items-center gap-3">
+                                @auth
+                                    <button class="like-btn d-flex align-items-center gap-1 border-0 bg-transparent p-0"
+                                            data-id="{{ $post->id }}"
+                                            onclick="event.stopPropagation();"
+                                            style="cursor:pointer;">
+                                        <i class="bi bi-heart-fill {{ $post->is_liked_by_current_user ? 'liked' : 'unliked' }}"
+                                           style="font-size:13px;"></i>
+                                        <span class="like-count" style="font-size:12px; color:#6b6b68;">
+                                            {{ $post->likes_count }}
+                                        </span>
+                                    </button>
+                                @endauth
+
+                                <span style="font-size:12px; font-weight:500; color:#c2410c;">Read →</span>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-                <span class="post-card-author-name">{{ $post->user->name }}</span>
             </div>
-
-            <div class="post-card-title">{{ $post->title }}</div>
-            <div class="post-card-excerpt">{{ Str::limit($post->content, 100, '...') }}</div>
-
-            <div class="post-card-footer d-flex justify-content-between align-items-center">
-                <span class="post-card-date">{{ $post->created_at->diffForHumans() }}</span>
-                
-               @auth
-                    <button class="like-btn" data-id="{{ $post->id }}" onclick="event.preventDefault(); event.stopPropagation();">
-                    <i class="bi bi-heart-fill {{ $post->is_liked_by_current_user ? 'liked' : 'unliked' }}"></i>
-                    <span class="like-count">{{ $post->likes_count }}</span>
-                </button>
-               @endauth
-
-                <span class="post-card-read">Read →</span>
-            </div>
-        </a>
         @empty
-        <div class="empty-state">
-            <div class="empty-state-icon">✍️</div>
-            <div class="empty-state-text">No posts yet</div>
-            <div class="empty-state-sub">Be the first to share something worth reading.</div>
-            @auth
-            <a href="{{ route('posts.create') }}" class="btn-primary-custom">
-                Create the first post
-            </a>
-            @else
-            <a href="{{ route('register') }}" class="btn-primary-custom">
-                Join and start writing
-            </a>
-            @endauth
-        </div>
+            <div class="col-12 text-center py-5 text-muted">
+                <div style="font-size:32px; margin-bottom:12px;">✍️</div>
+                <p class="fw-semibold mb-1" style="font-size:16px; color:#6b6b68;">No posts yet</p>
+                <p class="mb-3" style="font-size:13px;">Be the first to share something worth reading.</p>
+                @auth
+                    <a href="{{ route('posts.create') }}" class="btn btn-dark rounded-pill px-4" style="font-size:13px;">
+                        Create the first post
+                    </a>
+                @else
+                    <a href="{{ route('register') }}" class="btn btn-dark rounded-pill px-4" style="font-size:13px;">
+                        Join and start writing
+                    </a>
+                @endauth
+            </div>
         @endforelse
     </div>
 
 </div>
+
+<style>
+    .post-avatar {
+        width: 28px; height: 28px;
+        border-radius: 50%;
+        background: #fde8dc;
+        color: #c2410c;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 500;
+        flex-shrink: 0;
+    }
+
+    .post-card {
+        transition: transform 0.15s, border-color 0.15s;
+    }
+    .post-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(0,0,0,0.18) !important;
+    }
+
+    .liked  { color: #e11d48; }
+    .unliked { color: #9c9c99; }
+</style>
+
 <script>
-document.querySelectorAll('.like-btn').forEach(button => {
-    button.addEventListener('click', function () {
-        let postId = this.dataset.id;
-        let countSpan = this.querySelector('.like-count');
-        let icon = this.querySelector('i');
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const postId    = this.dataset.id;
+            const countSpan = this.querySelector('.like-count');
+            const icon      = this.querySelector('i');
 
-        fetch(`http://127.0.0.1:8000/posts/${postId}/like`, {
-            method: 'PUT',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            let count = parseInt(countSpan.innerText);
+            fetch(`/posts/${postId}/like`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                countSpan.innerText = data.liked
+                    ? parseInt(countSpan.innerText) + 1
+                    : parseInt(countSpan.innerText) - 1;
 
-            if (data.liked) {
-                countSpan.innerText = count + 1;
-                icon.classList.remove('unliked');
-                icon.classList.add('liked');
-            } else {
-                countSpan.innerText = count - 1;
-                icon.classList.remove('liked');
-                icon.classList.add('unliked');
-            }
+                icon.classList.toggle('liked',   data.liked);
+                icon.classList.toggle('unliked', !data.liked);
+            });
         });
     });
-});
 </script>
+
 @endsection

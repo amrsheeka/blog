@@ -95,7 +95,6 @@ class PostController extends Controller
     }
     public function like(Post $post)
     {
-        
         if( !Like::where('user_id', Auth::id())->where('post_id', $post->id)->exists()) {
             Like::create([
                 'user_id' => Auth::id(),

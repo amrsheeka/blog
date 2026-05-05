@@ -90,9 +90,11 @@
 
 <div class="post-show-wrap">
 
-    <a href="{{ route('posts.index') }}" class="back-link">Back to posts</a>
+    <a href="{{ redirect()->back()->getTargetUrl() }}" class="back-link">Back</a>
 
     <!-- Author Meta -->
+     <a href="{{ route('profile.target', $post->user) }}" class="text-decoration-none"
+        onclick="event.stopPropagation();">
     <div class="post-meta">
         <div class="user-avatar user-avatar-lg">
             {{ strtoupper(substr($post->user->name, 0, 1)) }}
@@ -102,6 +104,7 @@
             <div class="post-meta-date">{{ $post->created_at->diffForHumans() }}</div>
         </div>
     </div>
+    </a>
 
     <!-- Title -->
     <h1 class="post-show-title">{{ $post->title }}</h1>

@@ -42,6 +42,12 @@ class ProfileController extends Controller
      */
     public function show(Profile $profile) {}
 
+     public function showTarget(User $user)
+    {
+        $posts = Post::where('user_id', $user->id)->get();
+        return view('profile.targetProfile', compact(['user', 'posts']));
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

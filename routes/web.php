@@ -14,6 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('profile')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('profile');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::get('/{user}/target', [ProfileController::class, 'showTarget'])->name('profile.target');
         Route::put('/', [ProfileController::class, 'update'])->name('profile.update');
     });
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
