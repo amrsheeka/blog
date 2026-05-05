@@ -101,7 +101,7 @@ class PostController extends Controller
                 'user_id' => Auth::id(),
                 'post_id' => $post->id,
             ]);
-            $post->increment('Likes_count');
+            $post->increment('likes_count');
         }else {
             return $this->unlike($post);
         }
@@ -111,21 +111,21 @@ class PostController extends Controller
             'message' => 'Post liked successfully!',
             'data' => [
                 'post_id' => $post->id,
-                'likes_count' => $post->Likes_count,
+                'likes_count' => $post->likes_count,
             ],
         ]);
     }
     public function unlike(Post $post)
     {
         Like::where('user_id', Auth::id())->where('post_id', $post->id)->delete();
-        $post->decrement('Likes_count');
+        $post->decrement('likes_count');
         return response()->json([
             'status' => 'success',
             'liked' => false,
             'message' => 'Post unliked successfully!',
             'data' => [
                 'post_id' => $post->id,
-                'likes_count' => $post->Likes_count,
+                'likes_count' => $post->likes_count,
             ],
         ]);
     }
