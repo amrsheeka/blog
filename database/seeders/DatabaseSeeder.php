@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Follow;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -18,5 +19,6 @@ class DatabaseSeeder extends Seeder
     {
         User::factory(10)->create();
         Post::factory(10)->create();
+        Follow::factory(10)->create();
     }
 }

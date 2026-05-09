@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Follow;
 use App\Models\Like;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -15,9 +16,14 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::all();
+        $following = Follow::query()->where('follower_id', Auth::id())->pluck('following_id');
+        $posts1 = Post::whereIn('user_id', $following)->latest();
+        $posts2 =  Post::whereNotIn('user_id', $following)->latest();
+        $posts = $posts1->unionAll($posts2)->get();
+
         foreach ($posts as $post) {
             $post['is_liked_by_current_user'] = $this->isLikedByCurrentUser($post);
+            $post['is_Followed_current_user'] = in_array($post['user_id'],$following->toArray());
         }
         $posts->load('user');
         return view('posts.index', compact('posts'));
@@ -95,18 +101,18 @@ class PostController extends Controller
     }
     public function like(Post $post)
     {
-        if( !Like::where('user_id', Auth::id())->where('post_id', $post->id)->exists()) {
+        if (!Like::where('user_id', Auth::id())->where('post_id', $post->id)->exists()) {
             Like::create([
                 'user_id' => Auth::id(),
                 'post_id' => $post->id,
             ]);
             $post->increment('likes_count');
-        }else {
+        } else {
             return $this->unlike($post);
         }
         return response()->json([
             'status' => 'success',
-            'liked'=>true,
+            'liked' => true,
             'message' => 'Post liked successfully!',
             'data' => [
                 'post_id' => $post->id,
