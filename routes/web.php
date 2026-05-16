@@ -5,14 +5,15 @@ use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
-    Route::put('users/{id}/follow', [FollowController::class,'store'])->name('follow.store');
+    Route::put('users/{user}/follow', [FollowController::class,'store'])->name('follow.store');
     Route::prefix('profile')->group(function () {
+        Route::get('/followers/{user}', [FollowController::class, 'showFollowers'])->name('profile.followers');
+        Route::get('/following/{user}', [FollowController::class, 'showFollowing'])->name('profile.following');
         Route::get('/', [ProfileController::class, 'index'])->name('profile');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::get('/{user}/target', [ProfileController::class, 'showTarget'])->name('profile.target');

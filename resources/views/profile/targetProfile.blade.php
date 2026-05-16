@@ -23,12 +23,16 @@
 
             </div>
 
-            <!-- FOLLOW BUTTON (optional future feature) -->
-            <div class="mt-3 mt-md-0">
-                <button class="btn-ghost-custom">
-                    Follow
-                </button>
-            </div>
+            <!-- FOLLOW BUTTON -->
+<div class="mt-3 mt-md-0">
+    @auth
+            
+                    <button class="following-btn" data-user_id="{{ $user->id }}">
+                        {{ $user->is_Followed_current_user? "Unfollow":"Follow" }}
+                    </button>
+    @endauth
+
+</div>
 
         </div>
 
@@ -40,14 +44,14 @@
                 <small class="text-muted">Posts</small>
             </div>
 
-            <div class="col">
-                <h5 class="fw-bold">0</h5>
+            <div class="col pointer" onclick="window.location.href='{{ route('profile.followers',['user'=>$user]) }}'">
+                <h5 class="fw-bold">{{ $followersCount }}</h5>
                 <small class="text-muted">Followers</small>
             </div>
-
-            <div class="col">
-                <h5 class="fw-bold">0</h5>
-                <small class="text-muted">Following</small>
+            
+            <div class="col pointer" onclick="window.location.href='{{ route('profile.following',['user'=>$user]) }}'">
+                    <h5 class="fw-bold">{{ $followingCount }}</h5>
+                    <small class="text-muted">Following</small>
             </div>
 
         </div>
@@ -126,6 +130,46 @@
 .post-card:hover {
     transform: translateY(-4px);
 }
-</style>
+.following-btn {
+        border: 1px solid #c2410c;
+        background: transparent;
+        color: #c2410c;
+        border-radius: 999px;
+        padding: 7px 18px;
+        font-size: 12px;
+        font-weight: 500;
+        transition: 0.15s ease;
+    }
 
+    .following-btn:hover {
+        background: #c2410c;
+        color: white;
+    }
+    .pointer{
+        cursor: pointer;
+        position: relative;
+        z-index: 10;
+    }
+</style>
+<script>
+    document.querySelectorAll('.following-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const userId = this.dataset.user_id;
+            const btn = this;
+            fetch(`/users/${userId}/follow`, {
+                    method: 'PUT',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.followed);
+                    
+                    btn.innerText = data.followed ? 'Unfollow' : 'Follow';
+                });
+        });
+    });
+</script>
 @endsection

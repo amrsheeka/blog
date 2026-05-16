@@ -16,9 +16,11 @@ class ProfileController extends Controller
      */
     public function index()
     {
-        $profile = User::find(Auth::id());
+        $profile = Auth::user();
         $posts = Post::where('user_id', Auth::id())->get();
-        return view('profile.profile', compact(['profile', 'posts']));
+        $followersCount = $profile->followers->count();
+        $followingCount = $profile->following->count();
+        return view('profile.profile', compact(['profile', 'posts','followersCount','followingCount']));
     }
 
     /**
@@ -45,7 +47,10 @@ class ProfileController extends Controller
      public function showTarget(User $user)
     {
         $posts = Post::where('user_id', $user->id)->get();
-        return view('profile.targetProfile', compact(['user', 'posts']));
+        $user['is_Followed_current_user'] = $user->followers->contains(Auth::user());
+        $followersCount = $user->followers->count();
+        $followingCount = $user->following->count();
+        return view('profile.targetProfile', compact(['user', 'posts','followersCount','followingCount']));
     }
 
     /**

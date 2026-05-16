@@ -20,19 +20,25 @@
 
         <!-- Stats -->
         <div class="d-flex border rounded-3 overflow-hidden">
-            <div class="stat-cell text-center px-4 py-3">
-                <div class="stat-num">{{ $posts->count() }}</div>
-                <div class="stat-label">Posts</div>
-            </div>
-            <div class="stat-cell text-center px-4 py-3 border-start">
-                <div class="stat-num">—</div>
-                <div class="stat-label">Followers</div>
-            </div>
-            <div class="stat-cell text-center px-4 py-3 border-start">
-                <div class="stat-num">—</div>
-                <div class="stat-label">Following</div>
-            </div>
-        </div>
+    
+    <div class="stat-cell text-center px-4 py-3">
+        <div class="stat-num">{{ $posts->count() }}</div>
+        <div class="stat-label">Posts</div>
+    </div>
+
+    <a href="{{ route('profile.followers', ['user'=>Auth::user()]) }}" 
+       class="stat-cell text-center px-4 py-3 border-start text-decoration-none text-dark">
+        <div class="stat-num">{{ $followersCount }}</div>
+        <div class="stat-label">Followers</div>
+    </a>
+
+    <a href="{{ route('profile.following', ['user'=>Auth::user()]) }}" 
+        class="stat-cell text-center px-4 py-3 border-start text-decoration-none text-dark">
+        <div class="stat-num">{{ $followingCount }}</div>
+        <div class="stat-label">Following</div>
+    </a>
+
+</div>
 
     </div>
 

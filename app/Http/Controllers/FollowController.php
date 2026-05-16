@@ -27,33 +27,56 @@ class FollowController extends Controller
      */
     public function store(Request $request, String $id)
     {
-        $following = Follow::where('follower_id', Auth::id())->where('following_id',$id)->exists();
-        if ($following) {
-            Follow::where('follower_id',Auth::id())->where('following_id',$id)->delete();
-            return response()->json([
-                'status'=>'success',
-                'message'=>'The user unfollowed successfully!',
-                'followed'=>false
-            ]);
-        } else {
-            Follow::create([
-                'follower_id' => Auth::id(),
-                'following_id' => $id
-            ]);
-            return response()->json([
-                'status'=>'success',
-                'message'=>'The user followed successfully!',
-                'followed'=>true
-            ]);
+        if ($id != Auth::id()) {
+            $following = Auth::user()
+                ->following()
+                ->where('following_id', $id)
+                ->exists();
+            if ($following) {
+                Auth::user()->following()->detach($id);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'The user unfollowed successfully!',
+                    'followed' => false
+                ]);
+            } else {
+                Auth::user()->following()->attach($id);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'The user followed successfully!',
+                    'followed' => true
+                ]);
+            }
         }
+        return response()->json([
+            'status' => 'fail',
+            'message' => 'You can\'t follow yourself'
+        ], 403);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Follow $follow)
+    public function showFollowers(User $user)
     {
-        //
+        $followers = $user->followers;
+        $followersCount = $followers->count();
+        $currentUserFollowings = Auth::user()->following;
+        foreach ($followers as $follower) {
+            $follower['is_Followed_current_user'] = $currentUserFollowings->contains($follower);
+        }
+
+        return view('profile.followers', compact(['followers', 'followersCount', 'user']));
+    }
+    public function showFollowing(User $user)
+    {
+        $followings = $user->following;
+        $followingsCount = $followings->count();
+        $currentUserFollowings = Auth::user()->following;
+        foreach ($followings as $follower) {
+            $follower['is_Followed_current_user'] = $currentUserFollowings->contains($follower);
+        }
+        return view('profile.followings', compact(['followings', 'followingsCount', 'user']));
     }
 
     /**
