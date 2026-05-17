@@ -86,4 +86,8 @@ class User extends Authenticatable
             'following_id'
         );
     }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
 }

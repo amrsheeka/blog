@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
@@ -10,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::middleware('auth')->group(function () {
+    Route::post('/comments', [CommentController::class, 'store'])->name('posts.comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('posts.comments.destroy');
     Route::put('users/{user}/follow', [FollowController::class,'store'])->name('follow.store');
     Route::prefix('profile')->group(function () {
         Route::get('/followers/{user}', [FollowController::class, 'showFollowers'])->name('profile.followers');
@@ -28,6 +31,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [PostController::class, 'store'])->name('posts.store');
         Route::put('/{post}/like', [PostController::class, 'like'])->name('posts.like');
         Route::get('/search', [PostController::class, 'search'])->name('posts.search');
+        
     });
 });
 Route::middleware('guest')->group(function () {
@@ -37,6 +41,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->name('login');
 });
 Route::prefix('posts')->group(function () {
+    Route::get('/{post}/comments', [CommentController::class, 'showComments'])->name('posts.comments');
     Route::get('/', [PostController::class, 'index'])->name('posts.index');
     Route::get('/{post}', [PostController::class, 'show'])->name('posts.show');
 });
