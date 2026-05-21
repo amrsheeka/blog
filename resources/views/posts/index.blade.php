@@ -19,8 +19,7 @@
     <div class="row g-3">
         @forelse ($posts as $post)
         <div class="col-md-6 col-lg-4">
-            <div class="card border rounded-3 h-100 shadow-sm post-card"
-                style="cursor:pointer;"
+            <div class="card border rounded-3 h-100 shadow-sm post-card" style="cursor:pointer;"
                 onclick="window.location='{{ route('posts.show', $post) }}'">
 
                 <div class="card-body d-flex flex-column p-4">
@@ -47,13 +46,10 @@
                             @auth
                             @if ($post->user_id != Auth::id())
 
-                                <button class="follow-btn"
-                                data-user_id="{{ $post->user->id }}"
-                                onclick="event.stopPropagation();"
-                                style="cursor:pointer;"
-                                >
-                                    {{$post->is_Followed_current_user?"Unfollow":"Follow"}}
-                                </button>
+                            <button class="follow-btn" data-user_id="{{ $post->user->id }}"
+                                onclick="event.stopPropagation();" style="cursor:pointer;">
+                                {{$post->is_Followed_current_user?"Unfollow":"Follow"}}
+                            </button>
 
                             @endif
                             @endauth
@@ -79,9 +75,7 @@
                         <div class="d-flex align-items-center gap-3">
                             @auth
                             <button class="like-btn d-flex align-items-center gap-1 border-0 bg-transparent p-0"
-                                data-id="{{ $post->id }}"
-                                onclick="event.stopPropagation();"
-                                style="cursor:pointer;">
+                                data-id="{{ $post->id }}" onclick="event.stopPropagation();" style="cursor:pointer;">
                                 <i class="bi bi-heart-fill {{ $post->is_liked_by_current_user ? 'liked' : 'unliked' }}"
                                     style="font-size:13px;"></i>
                                 <span class="like-count" style="font-size:12px; color:#6b6b68;">
@@ -112,12 +106,65 @@
             </a>
             @endauth
         </div>
+
         @endforelse
+
+    </div>
+    <div class="d-flex justify-content-center mt-5">
+        <div class="saas-pagination-wrapper px-3 py-2 bg-white rounded-pill shadow-sm">
+            {{ $posts->links() }}
+        </div>
     </div>
 
 </div>
 
 <style>
+    .pagination {
+        margin: 0;
+        gap: 6px;
+        align-items: center;
+    }
+
+    /* base buttons */
+    .pagination .page-link {
+        border: none;
+        border-radius: 50px !important;
+        /* pills */
+        padding: 10px 14px;
+        min-width: 42px;
+        text-align: center;
+        color: #4b5563;
+        background: transparent;
+        transition: all 0.25s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* hover effect (soft glow) */
+    .pagination .page-link:hover {
+        background: #f3f4f6;
+        color: #111827;
+        transform: translateY(-2px);
+    }
+
+    /* active page */
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #d88c6e, #c2410c);
+        color: #fff;
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
+        transform: translateY(-2px);
+    }
+
+    /* disabled */
+    .pagination .page-item.disabled .page-link {
+        opacity: 0.4;
+    }
+
+    /* click animation */
+    .pagination .page-link:active {
+        transform: scale(0.92);
+    }
+
     .post-avatar {
         width: 28px;
         height: 28px;

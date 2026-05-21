@@ -19,7 +19,7 @@ class PostController extends Controller
         $following = Follow::query()->where('follower_id', Auth::id())->pluck('following_id');
         $posts1 = Post::whereIn('user_id', $following)->latest();
         $posts2 =  Post::whereNotIn('user_id', $following)->latest();
-        $posts = $posts1->unionAll($posts2)->get();
+        $posts = $posts1->unionAll($posts2)->paginate(6);
 
         foreach ($posts as $post) {
             $post['is_liked_by_current_user'] = $this->isLikedByCurrentUser($post);
@@ -143,7 +143,7 @@ class PostController extends Controller
         $query = $request->input('query');
         $posts = Post::where('title', 'like', "%{$query}%")
             ->orWhere('content', 'like', "%{$query}%")
-            ->get();
+            ->paginate(6);
         foreach ($posts as $post) {
             $post['is_liked_by_current_user'] = $this->isLikedByCurrentUser($post);
         }
